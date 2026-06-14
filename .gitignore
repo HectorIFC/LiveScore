@@ -1,0 +1,19 @@
+# ===== macOS =====
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# ===== Editors / IDEs =====
+.idea/
+.vscode/
+*.code-workspace
+*.swp
+
+# ===== Node tooling =====
+# CI runs linters via `npx` — nothing is installed into the repo.
+node_modules/
+npm-debug.log*
+
+# ===== Build output =====
+# Local preview of the GitHub Pages site.
+_site/

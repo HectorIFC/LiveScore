@@ -1,0 +1,80 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches-ignore: [main]  # feature branches get CI too
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    name: Validate HTML & JS
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: HTMLHint — markup lint
+        run: npx --yes htmlhint LiveScore.html
+
+      - name: JavaScript syntax check
+        # Compile-only (no execution): catches syntax errors in the embedded script.
+        run: |
+          node -e '
+            const fs = require("fs");
+            const vm = require("vm");
+            const html = fs.readFileSync("LiveScore.html", "utf8");
+            const m = html.match(/<script>([\s\S]*?)<\/script>/);
+            if (!m) { console.error("No <script> block found"); process.exit(1); }
+            new vm.Script(m[1]);
+            console.log("JS syntax OK (" + m[1].split("\n").length + " lines)");
+          '
+
+  quality:
+    name: Code Quality
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Self-contained guard (PRD R1 — single file, no external deps)
+        # The app must work offline as one standalone .html with no network assets.
+        run: |
+          fail=0
+          check() {
+            if grep -nE "$2" LiveScore.html; then
+              echo "::error::$1"
+              fail=1
+            fi
+          }
+          check "External http(s) resource in src/href is not allowed" '(src|href)=["'"'"']https?://'
+          check "External <script src=...> is not allowed"               '<script[^>]+src='
+          check "External stylesheet <link rel=stylesheet> is not allowed" '<link[^>]+stylesheet'
+          check "External url(http...) in CSS is not allowed"             'url\(\s*["'"'"']?https?:'
+          if [ "$fail" -eq 0 ]; then
+            echo "OK — LiveScore.html is fully self-contained."
+          else
+            exit 1
+          fi
+
+      - name: Required-structure guard (PRD R2/R5)
+        # Cheap invariants that must never regress.
+        run: |
+          fail=0
+          need() {
+            if ! grep -qE "$2" LiveScore.html; then
+              echo "::error::Missing: $1"
+              fail=1
+            fi
+          }
+          need "no-scroll rule (overflow:hidden)"        'overflow:hidden'
+          need "version meta tag"                        '<meta name="version" content="[0-9]+\.[0-9]+\.[0-9]+">'
+          need "viewport meta tag"                       '<meta name="viewport"'
+          need "language switch (i18n)"                  'id="langSwitch"'
+          [ "$fail" -eq 0 ] && echo "OK — required structure present." || exit 1

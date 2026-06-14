@@ -1,0 +1,46 @@
+name: Deploy Pages
+
+# Publishes the scoreboard as a live demo on GitHub Pages.
+# One-time setup: repo Settings → Pages → Build and deployment → Source:
+# "GitHub Actions". Until that is enabled, this workflow will fail without
+# affecting CI or Release (they are independent workflows).
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# Allow only one concurrent deployment; let an in-progress run finish.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  deploy:
+    name: Build & Deploy
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Assemble site
+        # The app is one file; serve it as the site index.
+        run: |
+          mkdir -p _site
+          cp LiveScore.html _site/index.html
+          cp -r assets _site/assets
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+      - id: deployment
+        uses: actions/deploy-pages@v4
