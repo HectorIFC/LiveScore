@@ -55,17 +55,12 @@
     font-weight:800;letter-spacing:.04em;
     font-size:clamp(12px,2.2vmin,20px);
   }
-  .brand .flag{
-    width:1.5em;height:1.05em;border-radius:3px;position:relative;
-    background:var(--br-green);overflow:hidden;flex:0 0 auto;
-    box-shadow:0 0 0 1px rgba(255,255,255,.15);
+  /* Brand mark: the LiveScore logo (same SVG as the favicon), embedded as a
+     data URI so the app stays a single self-contained file (PRD R1). */
+  .brand .brand-logo{
+    width:1.5em;height:1.5em;flex:0 0 auto;
+    background:url("data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCIgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByb2xlPSJpbWciIGFyaWEtbGFiZWw9IkxpdmVTY29yZSI+CiAgPGRlZnM+CiAgICA8ZmlsdGVyIGlkPSJnIiB4PSItNTAlIiB5PSItNTAlIiB3aWR0aD0iMjAwJSIgaGVpZ2h0PSIyMDAlIj4KICAgICAgPGZlR2F1c3NpYW5CbHVyIGluPSJTb3VyY2VHcmFwaGljIiBzdGREZXZpYXRpb249IjEuNCIgcmVzdWx0PSJiIi8+CiAgICAgIDxmZU1lcmdlPjxmZU1lcmdlTm9kZSBpbj0iYiIvPjxmZU1lcmdlTm9kZSBpbj0iU291cmNlR3JhcGhpYyIvPjwvZmVNZXJnZT4KICAgIDwvZmlsdGVyPgogIDwvZGVmcz4KICA8IS0tIERhcmsgcGFuZWwgd2l0aCBCcmF6aWwtZ3JlZW4gYm9yZGVyIC0tPgogIDxyZWN0IHg9IjMiIHk9IjMiIHdpZHRoPSI1OCIgaGVpZ2h0PSI1OCIgcng9IjE0IiBmaWxsPSIjMDcwOTBkIiBzdHJva2U9IiMwMGE4M2UiIHN0cm9rZS13aWR0aD0iNCIvPgogIDwhLS0gUmVkIExFRCBjb2xvbiDigJQgcmVhZHMgYXMgYSBkaWdpdGFsIHNjb3JlYm9hcmQgYXQgc21hbGwgc2l6ZXMgLS0+CiAgPGcgZmlsbD0iI2ZmMmExYSIgZmlsdGVyPSJ1cmwoI2cpIj4KICAgIDxyZWN0IHg9IjI3IiB5PSIxOSIgd2lkdGg9IjEwIiBoZWlnaHQ9IjEwIiByeD0iMi41Ii8+CiAgICA8cmVjdCB4PSIyNyIgeT0iMzUiIHdpZHRoPSIxMCIgaGVpZ2h0PSIxMCIgcng9IjIuNSIvPgogIDwvZz4KICA8IS0tIEJyYXppbCBwYWxldHRlIGJhc2VsaW5lIC0tPgogIDxyZWN0IHg9IjE2IiB5PSI1MSIgd2lkdGg9IjkiIGhlaWdodD0iNCIgcng9IjIiIGZpbGw9IiMwMGE4M2UiLz4KICA8cmVjdCB4PSIyNy41IiB5PSI1MSIgd2lkdGg9IjkiIGhlaWdodD0iNCIgcng9IjIiIGZpbGw9IiNmZmRmMDAiLz4KICA8cmVjdCB4PSIzOSIgeT0iNTEiIHdpZHRoPSI5IiBoZWlnaHQ9IjQiIHJ4PSIyIiBmaWxsPSIjMmE1MmQ2Ii8+Cjwvc3ZnPgo=") center/contain no-repeat;
   }
-  .brand .flag::before{content:"";position:absolute;inset:18% 12%;
-    background:var(--br-yellow);transform:rotate(0deg);
-    clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%);}
-  .brand .flag::after{content:"";position:absolute;left:50%;top:50%;
-    width:42%;height:42%;background:var(--br-blue);border-radius:50%;
-    transform:translate(-50%,-50%);}
 
   .controls-top{display:flex;align-items:center;gap:6px;flex-wrap:wrap;justify-content:flex-end;}
 
@@ -263,7 +258,7 @@
 
   <!-- Top bar -->
   <div class="topbar">
-    <div class="brand"><span class="flag"></span><span id="appTitle">LiveScore</span></div>
+    <div class="brand"><span class="brand-logo" aria-hidden="true"></span><span id="appTitle">LiveScore</span></div>
     <div class="controls-top">
       <div class="lang-switch" id="langSwitch">
         <button data-lang="pt" class="active">PT</button>
