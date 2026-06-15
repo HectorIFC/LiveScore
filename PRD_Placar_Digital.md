@@ -99,7 +99,7 @@ Cada partida encerrada **alimenta** uma tabela acumulada de times.
 ### Regras
 - Ordenação: do time que **mais** fez gols para o que **menos** fez (decrescente).
 - Times são acumulados por sigla: se "BRA" jogar 3 vezes, os gols somam.
-- Persistência: manter em memória durante a sessão. (Ver Q2 — não usar `localStorage` em ambiente de artifact; em arquivo HTML standalone aberto direto no navegador, `localStorage` funciona e dá persistência entre recargas — recomendado para o uso real.)
+- Persistência: usar `localStorage` — recomendado para o uso normal (arquivo HTML aberto direto no navegador), pois persiste durante a sessão e entre recargas. Fallback em memória quando o `localStorage` não está disponível (ex.: ambiente de CI/artifact ou navegação restrita).
 
 ### Exemplo
 | Time | Gols |

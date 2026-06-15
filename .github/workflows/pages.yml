@@ -28,6 +28,8 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false  # deploy uses OIDC; no git creds needed
 
       - name: Assemble site
         # The app is one file; serve it as the site index.
