@@ -43,7 +43,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Self-contained guard (PRD R1 — single file, no external deps)
+      - name: Self-contained guard
         # The app must work offline as one standalone .html with no network assets.
         run: |
           fail=0
@@ -63,7 +63,7 @@ jobs:
             exit 1
           fi
 
-      - name: Required-structure guard (PRD R2/R5)
+      - name: Required-structure guard
         # Cheap invariants that must never regress.
         run: |
           fail=0

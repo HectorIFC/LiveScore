@@ -18,9 +18,9 @@
 ## Checklist
 
 - [ ] `npx htmlhint LiveScore.html` passes (no markup violations)
-- [ ] App stays a **single self-contained file** — no external scripts, styles, fonts or images (PRD R1)
-- [ ] **No scrollbar** appears on any screen size / orientation (PRD R2)
-- [ ] All three languages (PT / EN / ES) still switch correctly (PRD R5)
+- [ ] App stays a **single self-contained file** — no external scripts, styles, fonts or images
+- [ ] **No scrollbar** appears on any screen size / orientation
+- [ ] All three languages (PT / EN / ES) still switch correctly
 - [ ] Verified in a browser (timer, goals/fouls + sounds, leaderboard, clean-mode)
 - [ ] `CHANGELOG.md` updated under `[Unreleased]`
 

@@ -22,17 +22,14 @@
 one `.html` file with no build step and no external dependencies. It is operated
 by one person (the "marker") while the public watches the screen.
 
-It implements [`PRD_Placar_Digital.md`](./PRD_Placar_Digital.md) — open that
-document for the full product spec and acceptance criteria.
-
 ### Principles
 
-- **Single file** — HTML + CSS + JS embedded; works offline, even emailed as one file (PRD R1)
-- **No scrollbar, ever** — fits 100% of the viewport on any device (PRD R2)
-- **Responsive** — Smart TV, laptop and phone, landscape and portrait (PRD R3)
-- **Brazil palette** — green, yellow and blue, with the characteristic red LED digits (PRD R4)
-- **Multi-language** — Portuguese (default), English and Spanish, switched live (PRD R5)
-- **Synthesized sound** — every action plays a distinct sound via the Web Audio API, no audio files (PRD R6)
+- **Single file** — HTML + CSS + JS embedded; works offline, even emailed as one file
+- **No scrollbar, ever** — fits 100% of the viewport on any device
+- **Responsive** — Smart TV, laptop and phone, landscape and portrait
+- **Brazil palette** — green, yellow and blue, with the characteristic red LED digits
+- **Multi-language** — Portuguese (default), English and Spanish, switched live
+- **Synthesized sound** — every action plays a distinct sound via the Web Audio API, no audio files
 
 ## Features
 

@@ -20,7 +20,6 @@ on merge to `main` (see [README — Versioning](./README.md#versioning--releases
   the clock is stopped); `Reset` returns to the configured duration.
 - CI/CD pipeline (GitHub Actions):
   - `ci.yml` — HTMLHint, embedded-JS syntax check, a self-contained guard
-    (PRD R1) and required-structure guards (PRD R2/R5) on every PR.
   - `release.yml` — SemVer bump from conventional commits, embedded-version
     update, git tag and GitHub Release.
   - `pages.yml` — deploys the scoreboard as a live demo on GitHub Pages.
