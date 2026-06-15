@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="LiveScore">
+  <defs>
+    <filter id="g" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="1.4" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <!-- Dark panel with Brazil-green border -->
+  <rect x="3" y="3" width="58" height="58" rx="14" fill="#07090d" stroke="#00a83e" stroke-width="4"/>
+  <!-- Red LED colon — reads as a digital scoreboard at small sizes -->
+  <g fill="#ff2a1a" filter="url(#g)">
+    <rect x="27" y="19" width="10" height="10" rx="2.5"/>
+    <rect x="27" y="35" width="10" height="10" rx="2.5"/>
+  </g>
+  <!-- Brazil palette baseline -->
+  <rect x="16" y="51" width="9" height="4" rx="2" fill="#00a83e"/>
+  <rect x="27.5" y="51" width="9" height="4" rx="2" fill="#ffdf00"/>
+  <rect x="39" y="51" width="9" height="4" rx="2" fill="#2a52d6"/>
+</svg>

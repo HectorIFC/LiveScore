@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="version" content="0.0.0">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCIgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByb2xlPSJpbWciIGFyaWEtbGFiZWw9IkxpdmVTY29yZSI+CiAgPGRlZnM+CiAgICA8ZmlsdGVyIGlkPSJnIiB4PSItNTAlIiB5PSItNTAlIiB3aWR0aD0iMjAwJSIgaGVpZ2h0PSIyMDAlIj4KICAgICAgPGZlR2F1c3NpYW5CbHVyIGluPSJTb3VyY2VHcmFwaGljIiBzdGREZXZpYXRpb249IjEuNCIgcmVzdWx0PSJiIi8+CiAgICAgIDxmZU1lcmdlPjxmZU1lcmdlTm9kZSBpbj0iYiIvPjxmZU1lcmdlTm9kZSBpbj0iU291cmNlR3JhcGhpYyIvPjwvZmVNZXJnZT4KICAgIDwvZmlsdGVyPgogIDwvZGVmcz4KICA8IS0tIERhcmsgcGFuZWwgd2l0aCBCcmF6aWwtZ3JlZW4gYm9yZGVyIC0tPgogIDxyZWN0IHg9IjMiIHk9IjMiIHdpZHRoPSI1OCIgaGVpZ2h0PSI1OCIgcng9IjE0IiBmaWxsPSIjMDcwOTBkIiBzdHJva2U9IiMwMGE4M2UiIHN0cm9rZS13aWR0aD0iNCIvPgogIDwhLS0gUmVkIExFRCBjb2xvbiDigJQgcmVhZHMgYXMgYSBkaWdpdGFsIHNjb3JlYm9hcmQgYXQgc21hbGwgc2l6ZXMgLS0+CiAgPGcgZmlsbD0iI2ZmMmExYSIgZmlsdGVyPSJ1cmwoI2cpIj4KICAgIDxyZWN0IHg9IjI3IiB5PSIxOSIgd2lkdGg9IjEwIiBoZWlnaHQ9IjEwIiByeD0iMi41Ii8+CiAgICA8cmVjdCB4PSIyNyIgeT0iMzUiIHdpZHRoPSIxMCIgaGVpZ2h0PSIxMCIgcng9IjIuNSIvPgogIDwvZz4KICA8IS0tIEJyYXppbCBwYWxldHRlIGJhc2VsaW5lIC0tPgogIDxyZWN0IHg9IjE2IiB5PSI1MSIgd2lkdGg9IjkiIGhlaWdodD0iNCIgcng9IjIiIGZpbGw9IiMwMGE4M2UiLz4KICA8cmVjdCB4PSIyNy41IiB5PSI1MSIgd2lkdGg9IjkiIGhlaWdodD0iNCIgcng9IjIiIGZpbGw9IiNmZmRmMDAiLz4KICA8cmVjdCB4PSIzOSIgeT0iNTEiIHdpZHRoPSI5IiBoZWlnaHQ9IjQiIHJ4PSIyIiBmaWxsPSIjMmE1MmQ2Ii8+Cjwvc3ZnPgo=">
+<title>LiveScore</title>
+<style>
+  /* ============ Brazil palette ============ */
+  :root{
+    --br-green:#009b3a;
+    --br-yellow:#ffdf00;
+    --br-blue:#002776;
+    --led-red:#ff2a1a;
+    --led-red-dim:#3a0806;
+    --panel:#0a0d12;
+    --panel-2:#05070a;
+    --label:#7fd7ff;
+    --white:#f2f6ff;
+  }
+
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+
+  html,body{
+    width:100%;height:100%;
+    overflow:hidden;                 /* R2: no scrollbar ever */
+    background:#000;
+    font-family:'Segoe UI',Roboto,system-ui,sans-serif;
+    color:var(--white);
+    user-select:none;
+  }
+
+  /* full-viewport app shell */
+  #app{
+    position:fixed;inset:0;
+    display:flex;flex-direction:column;
+    padding:clamp(6px,1.4vmin,16px);
+    gap:clamp(6px,1.2vmin,14px);
+    background:
+      radial-gradient(120% 80% at 50% -10%, rgba(0,155,58,.18), transparent 60%),
+      radial-gradient(120% 80% at 50% 110%, rgba(0,39,118,.30), transparent 60%),
+      #000;
+  }
+
+  /* ============ Top bar ============ */
+  .topbar{
+    flex:0 0 auto;
+    display:flex;align-items:center;justify-content:space-between;
+    gap:8px;
+  }
+  .brand{
+    display:flex;align-items:center;gap:.5em;
+    font-weight:800;letter-spacing:.04em;
+    font-size:clamp(12px,2.2vmin,20px);
+  }
+  /* Brand mark: the LiveScore logo (same SVG as the favicon)
+     */
+  .brand .brand-logo{
+    width:1.5em;height:1.5em;flex:0 0 auto;
+    background:url("data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCIgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByb2xlPSJpbWciIGFyaWEtbGFiZWw9IkxpdmVTY29yZSI+CiAgPGRlZnM+CiAgICA8ZmlsdGVyIGlkPSJnIiB4PSItNTAlIiB5PSItNTAlIiB3aWR0aD0iMjAwJSIgaGVpZ2h0PSIyMDAlIj4KICAgICAgPGZlR2F1c3NpYW5CbHVyIGluPSJTb3VyY2VHcmFwaGljIiBzdGREZXZpYXRpb249IjEuNCIgcmVzdWx0PSJiIi8+CiAgICAgIDxmZU1lcmdlPjxmZU1lcmdlTm9kZSBpbj0iYiIvPjxmZU1lcmdlTm9kZSBpbj0iU291cmNlR3JhcGhpYyIvPjwvZmVNZXJnZT4KICAgIDwvZmlsdGVyPgogIDwvZGVmcz4KICA8IS0tIERhcmsgcGFuZWwgd2l0aCBCcmF6aWwtZ3JlZW4gYm9yZGVyIC0tPgogIDxyZWN0IHg9IjMiIHk9IjMiIHdpZHRoPSI1OCIgaGVpZ2h0PSI1OCIgcng9IjE0IiBmaWxsPSIjMDcwOTBkIiBzdHJva2U9IiMwMGE4M2UiIHN0cm9rZS13aWR0aD0iNCIvPgogIDwhLS0gUmVkIExFRCBjb2xvbiDigJQgcmVhZHMgYXMgYSBkaWdpdGFsIHNjb3JlYm9hcmQgYXQgc21hbGwgc2l6ZXMgLS0+CiAgPGcgZmlsbD0iI2ZmMmExYSIgZmlsdGVyPSJ1cmwoI2cpIj4KICAgIDxyZWN0IHg9IjI3IiB5PSIxOSIgd2lkdGg9IjEwIiBoZWlnaHQ9IjEwIiByeD0iMi41Ii8+CiAgICA8cmVjdCB4PSIyNyIgeT0iMzUiIHdpZHRoPSIxMCIgaGVpZ2h0PSIxMCIgcng9IjIuNSIvPgogIDwvZz4KICA8IS0tIEJyYXppbCBwYWxldHRlIGJhc2VsaW5lIC0tPgogIDxyZWN0IHg9IjE2IiB5PSI1MSIgd2lkdGg9IjkiIGhlaWdodD0iNCIgcng9IjIiIGZpbGw9IiMwMGE4M2UiLz4KICA8cmVjdCB4PSIyNy41IiB5PSI1MSIgd2lkdGg9IjkiIGhlaWdodD0iNCIgcng9IjIiIGZpbGw9IiNmZmRmMDAiLz4KICA8cmVjdCB4PSIzOSIgeT0iNTEiIHdpZHRoPSI5IiBoZWlnaHQ9IjQiIHJ4PSIyIiBmaWxsPSIjMmE1MmQ2Ii8+Cjwvc3ZnPgo=") center/contain no-repeat;
+  }
+
+  .controls-top{display:flex;align-items:center;gap:6px;flex-wrap:wrap;justify-content:flex-end;}
+
+  .lang-switch{display:flex;border:1px solid rgba(127,215,255,.3);border-radius:8px;overflow:hidden;}
+  .lang-switch button{
+    background:transparent;color:var(--label);border:none;
+    padding:.45em .7em;font-weight:700;cursor:pointer;font-size:clamp(10px,1.6vmin,14px);
+  }
+  .lang-switch button.active{background:var(--br-blue);color:#fff;}
+
+  .icon-btn{
+    background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);
+    color:var(--white);border-radius:8px;cursor:pointer;font-weight:700;
+    padding:.45em .8em;font-size:clamp(10px,1.6vmin,14px);
+  }
+  .icon-btn:hover{background:rgba(255,255,255,.14);}
+  .icon-btn:active{transform:scale(.94);background:rgba(255,255,255,.22);}
+  .lang-switch button:active{filter:brightness(.8);}
+
+  /* ============ Scoreboard panel ============ */
+  .board-wrap{
+    flex:1 1 auto;min-height:0;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .board{
+    width:100%;height:100%;
+    border-radius:clamp(10px,1.6vmin,22px);
+    background:linear-gradient(160deg,var(--panel),var(--panel-2));
+    border:clamp(2px,.5vmin,5px) solid var(--br-green);
+    box-shadow:
+      0 0 0 clamp(2px,.4vmin,4px) var(--br-yellow),
+      0 0 0 clamp(4px,.9vmin,9px) var(--br-blue),
+      0 12px 50px rgba(0,0,0,.7), inset 0 0 80px rgba(0,0,0,.6);
+    display:grid;
+    grid-template-columns:1fr 1.15fr 1fr;
+    grid-template-rows:auto 1fr auto 1fr;
+    grid-template-areas:
+      "lblFA  lblTime  lblFB"
+      "foulA  tempo    foulB"
+      "lblTA  lblPer   lblTB"
+      "scoreA period   scoreB";
+    gap:clamp(2px,1vmin,14px);
+    padding:clamp(8px,2vmin,26px);
+    align-items:center;justify-items:center;
+  }
+
+  .lbl{
+    color:var(--label);font-weight:800;letter-spacing:.08em;
+    font-size:clamp(11px,2.4vmin,30px);text-transform:uppercase;
+    text-shadow:0 0 8px rgba(127,215,255,.4);
+    white-space:nowrap;
+  }
+  .lbl-fa{grid-area:lblFA;} .lbl-fb{grid-area:lblFB;}
+  .lbl-time{grid-area:lblTime;} .lbl-per{grid-area:lblPer;}
+  .lbl-ta{grid-area:lblTA;color:var(--br-yellow);text-shadow:0 0 10px rgba(255,223,0,.4);}
+  .lbl-tb{grid-area:lblTB;color:var(--br-yellow);text-shadow:0 0 10px rgba(255,223,0,.4);}
+
+  /* LED digit display */
+  .led{
+    font-family:'Courier New',monospace;
+    font-weight:700;
+    color:var(--led-red);
+    text-shadow:0 0 6px rgba(255,42,26,.9),0 0 18px rgba(255,42,26,.6),0 0 40px rgba(255,42,26,.35);
+    line-height:.9;letter-spacing:.04em;
+    background:var(--led-red-dim);
+    border-radius:8px;
+    padding:.06em .22em;
+    border:1px solid rgba(255,42,26,.18);
+    box-shadow:inset 0 0 24px rgba(255,42,26,.12);
+    display:flex;align-items:center;justify-content:center;
+  }
+  .foul-value{font-size:clamp(34px,11vmin,150px);}
+  .foul-value.a{grid-area:foulA;}
+  .foul-value.b{grid-area:foulB;}
+  .tempo{grid-area:tempo;font-size:clamp(40px,12vmin,180px);min-width:3.4em;}
+  .score{font-size:clamp(48px,16vmin,230px);min-width:1.8em;}
+  .score.a{grid-area:scoreA;} .score.b{grid-area:scoreB;}
+  .period{grid-area:period;font-size:clamp(34px,11vmin,150px);min-width:1em;}
+
+  /* ============ Control deck ============ */
+  .deck{
+    flex:0 0 auto;
+    display:grid;
+    grid-template-columns:1fr 1fr 1fr;
+    gap:clamp(5px,1vmin,12px);
+    transition:max-height .3s ease,opacity .3s ease;
+    overflow:hidden;
+  }
+  .deck.hidden{max-height:0;opacity:0;pointer-events:none;}
+
+  .col{
+    background:rgba(255,255,255,.04);
+    border:1px solid rgba(255,255,255,.1);
+    border-radius:12px;
+    padding:clamp(6px,1.2vmin,12px);
+    display:flex;flex-direction:column;gap:6px;min-width:0;
+  }
+  .col.center{border-color:rgba(255,223,0,.4);}
+  .col.a{border-color:rgba(0,155,58,.5);}
+  .col.b{border-color:rgba(0,39,118,.7);}
+
+  .col h3{
+    font-size:clamp(11px,1.8vmin,16px);text-align:center;
+    letter-spacing:.05em;text-transform:uppercase;color:var(--label);
+    display:flex;gap:.4em;align-items:center;justify-content:center;
+  }
+  .col.a h3{color:#5be08a;} .col.b h3{color:#7fb0ff;}
+
+  .row{display:flex;gap:6px;}
+  .row>*{flex:1;}
+
+  button.act{
+    border:none;border-radius:9px;cursor:pointer;font-weight:800;
+    padding:.6em .3em;font-size:clamp(11px,1.7vmin,16px);
+    color:#04110a;transition:transform .05s ease,filter .08s ease,box-shadow .08s ease;
+    min-width:0;position:relative;
+  }
+  /* clear pressed feedback: darken, sink in, inner shadow */
+  button.act:active,
+  button.act.pressed{
+    transform:scale(.93) translateY(1px);
+    filter:brightness(.7) saturate(1.2);
+    box-shadow:inset 0 3px 8px rgba(0,0,0,.55);
+  }
+  button.act:focus-visible{outline:3px solid var(--br-yellow);outline-offset:2px;}
+  button.act:disabled{opacity:.4;cursor:not-allowed;filter:grayscale(.4);}
+  button.act:disabled:active{transform:none;box-shadow:none;filter:grayscale(.4);}
+  .goal{background:linear-gradient(180deg,#19d65f,var(--br-green));color:#04110a;}
+  .goal.b{background:linear-gradient(180deg,#3a6fff,var(--br-blue));color:#fff;}
+  .minus{background:rgba(255,255,255,.12);color:#fff;}
+  .foul{background:linear-gradient(180deg,#ffe84d,var(--br-yellow));color:#3a2c00;}
+  .start{background:linear-gradient(180deg,#19d65f,var(--br-green));color:#04110a;}
+  .pause{background:linear-gradient(180deg,#ffe84d,var(--br-yellow));color:#3a2c00;}
+  .reset{background:rgba(255,255,255,.12);color:#fff;}
+  .end{background:linear-gradient(180deg,#ff5a47,#c01000);color:#fff;}
+
+  .name-input{
+    width:100%;background:#000;border:1px solid rgba(255,255,255,.2);
+    color:var(--led-red);border-radius:8px;text-align:center;
+    font-weight:800;padding:.5em;font-size:clamp(12px,1.8vmin,17px);
+    text-transform:uppercase;letter-spacing:.1em;
+  }
+  .name-input:focus{outline:1px solid var(--br-yellow);}
+
+  /* ============ Leaderboard modal ============ */
+  .overlay{
+    position:fixed;inset:0;background:rgba(0,0,0,.78);
+    display:none;align-items:center;justify-content:center;z-index:50;
+    padding:4vmin;backdrop-filter:blur(3px);
+  }
+  .overlay.show{display:flex;}
+  .modal{
+    width:min(560px,94vw);max-height:88vh;display:flex;flex-direction:column;
+    background:linear-gradient(160deg,#0b1119,#05070a);
+    border-radius:16px;border:2px solid var(--br-yellow);
+    box-shadow:0 0 0 3px var(--br-green),0 20px 60px rgba(0,0,0,.8);
+    overflow:hidden;
+  }
+  .modal header{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:14px 18px;border-bottom:1px solid rgba(255,255,255,.1);
+  }
+  .modal header h2{font-size:clamp(16px,2.6vmin,22px);letter-spacing:.04em;color:var(--br-yellow);}
+  .modal .body{overflow-y:auto;padding:8px 0;}
+  table{width:100%;border-collapse:collapse;}
+  th,td{padding:.7em 1.1em;text-align:left;font-size:clamp(13px,2vmin,17px);}
+  th{color:var(--label);text-transform:uppercase;letter-spacing:.06em;font-size:clamp(11px,1.7vmin,14px);}
+  th.goals-col{text-align:right;}
+  tbody tr{border-top:1px solid rgba(255,255,255,.06);}
+  td.rank{width:2.5em;color:var(--br-yellow);font-weight:800;}
+  td.team{font-weight:800;letter-spacing:.08em;}
+  td.goals{text-align:right;color:var(--led-red);font-weight:800;font-variant-numeric:tabular-nums;}
+  tbody tr:first-child td.rank{font-size:1.2em;}
+  .empty{padding:2.5em 1em;text-align:center;color:rgba(255,255,255,.5);}
+  .modal footer{padding:12px 18px;border-top:1px solid rgba(255,255,255,.1);display:flex;justify-content:space-between;gap:8px;}
+  .danger{background:linear-gradient(180deg,#ff5a47,#c01000);color:#fff;border:none;border-radius:9px;padding:.6em 1em;font-weight:800;cursor:pointer;transition:filter .08s,transform .05s;}
+  .ghost{background:rgba(255,255,255,.1);color:#fff;border:none;border-radius:9px;padding:.6em 1em;font-weight:800;cursor:pointer;transition:filter .08s,transform .05s;}
+  .danger:active,.ghost:active{transform:scale(.94);filter:brightness(.75);}
+
+  /* Landscape phones / small heights: shrink labels of team names under board */
+  @media (max-height:520px){
+    .deck h3{display:none;}
+    .col{gap:4px;}
+  }
+
+  /* Portrait phone: stack control columns */
+  @media (max-width:560px) and (orientation:portrait){
+    .deck{grid-template-columns:1fr 1fr;}
+    .col.center{grid-column:1 / -1;}
+  }
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- Top bar -->
+  <div class="topbar">
+    <div class="brand"><span class="brand-logo" aria-hidden="true"></span><span id="appTitle">LiveScore</span></div>
+    <div class="controls-top">
+      <div class="lang-switch" id="langSwitch">
+        <button data-lang="pt" class="active">PT</button>
+        <button data-lang="en">EN</button>
+        <button data-lang="es">ES</button>
+      </div>
+      <button class="icon-btn" id="btnLeader">🏆 <span data-i18n="leaderboard">Ranking</span></button>
+      <button class="icon-btn" id="btnToggleDeck" data-i18n="hideControls">Ocultar</button>
+    </div>
+  </div>
+
+  <!-- Scoreboard -->
+  <div class="board-wrap">
+    <div class="board">
+      <div class="lbl lbl-fa" data-i18n="fouls">Set/Faltas</div>
+      <div class="lbl lbl-time" data-i18n="time">Tempo</div>
+      <div class="lbl lbl-fb" data-i18n="fouls">Set/Faltas</div>
+
+      <div class="led foul-value a" id="foulA">0</div>
+      <div class="led tempo" id="tempo">20:00</div>
+      <div class="led foul-value b" id="foulB">0</div>
+
+      <div class="lbl lbl-ta" id="labelTeamA">TIME A</div>
+      <div class="lbl lbl-per" data-i18n="period">Período</div>
+      <div class="lbl lbl-tb" id="labelTeamB">TIME B</div>
+
+      <div class="led score a" id="scoreA">00</div>
+      <div class="led period" id="period">1</div>
+      <div class="led score b" id="scoreB">00</div>
+    </div>
+  </div>
+
+  <!-- Control deck -->
+  <div class="deck" id="deck">
+    <!-- Team A -->
+    <div class="col a">
+      <h3>⚽ <span id="ctrlNameA">TIME A</span></h3>
+      <input class="name-input" id="inputA" maxlength="4" value="TMA">
+      <div class="row">
+        <button class="act goal" data-act="goal" data-team="A" data-delta="1" data-i18n="goal">Gol +1</button>
+        <button class="act minus" data-act="goal" data-team="A" data-delta="-1" aria-label="-1">−1</button>
+      </div>
+      <div class="row">
+        <button class="act foul" data-act="foul" data-team="A" data-delta="1" data-i18n="foul">Falta +1</button>
+        <button class="act minus" data-act="foul" data-team="A" data-delta="-1" aria-label="-1">−1</button>
+      </div>
+    </div>
+
+    <!-- Match -->
+    <div class="col center">
+      <h3>⏱ <span data-i18n="match">Partida</span></h3>
+      <div class="row">
+        <button class="act start" data-act="start" data-i18n="start">Iniciar</button>
+        <button class="act pause" data-act="pause" data-i18n="pause">Pausar</button>
+      </div>
+      <div class="row">
+        <button class="act reset" data-act="reset" data-i18n="reset">Resetar</button>
+        <button class="act end" data-act="end" data-i18n="end">Encerrar</button>
+      </div>
+      <div class="row">
+        <button class="act minus" data-act="duration" data-delta="-1" data-i18n="minusMin">−1 min</button>
+        <button class="act minus" data-act="duration" data-delta="1" data-i18n="plusMin">+1 min</button>
+      </div>
+      <div class="row">
+        <button class="act minus" data-act="periodPlus"><span data-i18n="period">Período</span> +1</button>
+      </div>
+    </div>
+
+    <!-- Team B -->
+    <div class="col b">
+      <h3>⚽ <span id="ctrlNameB">TIME B</span></h3>
+      <input class="name-input" id="inputB" maxlength="4" value="TMB">
+      <div class="row">
+        <button class="act goal b" data-act="goal" data-team="B" data-delta="1" data-i18n="goal">Gol +1</button>
+        <button class="act minus" data-act="goal" data-team="B" data-delta="-1" aria-label="-1">−1</button>
+      </div>
+      <div class="row">
+        <button class="act foul" data-act="foul" data-team="B" data-delta="1" data-i18n="foul">Falta +1</button>
+        <button class="act minus" data-act="foul" data-team="B" data-delta="-1" aria-label="-1">−1</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Leaderboard modal -->
+<div class="overlay" id="overlay">
+  <div class="modal">
+    <header>
+      <h2>🏆 <span data-i18n="leaderboard">Ranking</span></h2>
+      <button class="ghost" id="closeModal">✕</button>
+    </header>
+    <div class="body">
+      <table>
+        <thead>
+          <tr>
+            <th></th>
+            <th data-i18n="team">Time</th>
+            <th class="goals-col" data-i18n="goalsCol">Gols</th>
+          </tr>
+        </thead>
+        <tbody id="leaderBody"></tbody>
+      </table>
+      <div class="empty" id="emptyMsg" data-i18n="emptyLeader">Nenhuma partida registrada ainda.</div>
+    </div>
+    <footer>
+      <button class="danger" id="clearLeader" data-i18n="clearLeader">Limpar ranking</button>
+      <button class="ghost" id="closeModal2" data-i18n="close">Fechar</button>
+    </footer>
+  </div>
+</div>
+
+<!-- Confirm modal (replaces native confirm, which is blocked in some viewers) -->
+<div class="overlay" id="confirmOverlay">
+  <div class="modal" style="width:min(420px,92vw)">
+    <header><h2 id="confirmTitle">⚠️</h2></header>
+    <div class="body" style="padding:20px 22px;font-size:clamp(14px,2.2vmin,18px);line-height:1.4;" id="confirmText"></div>
+    <footer>
+      <button class="ghost" id="confirmNo" data-i18n="cancel">Cancelar</button>
+      <button class="danger" id="confirmYes" data-i18n="confirm">Confirmar</button>
+    </footer>
+  </div>
+</div>
+
+<script>
+"use strict";
+
+/* =====================================================================
+   LiveScore — single-file digital scoreboard.
+   Sections: Config -> i18n -> DOM cache -> Audio -> State -> Render
+             -> Timer -> Leaderboard -> Actions -> UI wiring -> Init
+   ===================================================================== */
+
+/* ============ Config / constants ============ */
+const SECONDS_PER_MINUTE = 60;
+const DEFAULT_DURATION   = 20 * SECONDS_PER_MINUTE;   // R: 20:00 default
+const MIN_DURATION       = 1  * SECONDS_PER_MINUTE;   // floor for the +/- stepper
+const MAX_DURATION       = 99 * SECONDS_PER_MINUTE;   // MM:SS display caps at 99
+const DEFAULT_NAME_A     = "TMA";
+const DEFAULT_NAME_B     = "TMB";
+const STORAGE_KEY        = "liveScore.leaderboard.v1";
+
+/* ============ i18n ============ */
+const I18N = {
+  pt:{appTitle:"LiveScore",time:"Tempo",fouls:"Set/Faltas",period:"Período",
+      match:"Partida",goal:"Gol +1",foul:"Falta +1",start:"Iniciar",pause:"Pausar",
+      reset:"Resetar",end:"Encerrar",minusMin:"−1 min",plusMin:"+1 min",
+      leaderboard:"Ranking",team:"Time",goalsCol:"Gols",
+      emptyLeader:"Nenhuma partida registrada ainda.",clearLeader:"Limpar ranking",
+      close:"Fechar",hideControls:"Ocultar",showControls:"Mostrar",
+      confirmEnd:"Encerrar partida e registrar no ranking?",
+      confirmClear:"Apagar todo o ranking? Esta ação não pode ser desfeita.",
+      cancel:"Cancelar",confirm:"Confirmar"},
+  en:{appTitle:"LiveScore",time:"Time",fouls:"Set/Fouls",period:"Period",
+      match:"Match",goal:"Goal +1",foul:"Foul +1",start:"Start",pause:"Pause",
+      reset:"Reset",end:"End",minusMin:"−1 min",plusMin:"+1 min",
+      leaderboard:"Leaderboard",team:"Team",goalsCol:"Goals",
+      emptyLeader:"No matches recorded yet.",clearLeader:"Clear leaderboard",
+      close:"Close",hideControls:"Hide",showControls:"Show",
+      confirmEnd:"End match and record it on the leaderboard?",
+      confirmClear:"Erase the entire leaderboard? This cannot be undone.",
+      cancel:"Cancel",confirm:"Confirm"},
+  es:{appTitle:"LiveScore",time:"Tiempo",fouls:"Set/Faltas",period:"Período",
+      match:"Partido",goal:"Gol +1",foul:"Falta +1",start:"Iniciar",pause:"Pausar",
+      reset:"Reiniciar",end:"Finalizar",minusMin:"−1 min",plusMin:"+1 min",
+      leaderboard:"Clasificación",team:"Equipo",goalsCol:"Goles",
+      emptyLeader:"Aún no hay partidos registrados.",clearLeader:"Borrar clasificación",
+      close:"Cerrar",hideControls:"Ocultar",showControls:"Mostrar",
+      confirmEnd:"¿Finalizar partido y registrarlo en la clasificación?",
+      confirmClear:"¿Borrar toda la clasificación? Esta acción no se puede deshacer.",
+      cancel:"Cancelar",confirm:"Confirmar"}
+};
+let lang = "pt";
+function t(key){ return (I18N[lang] && I18N[lang][key]) || key; }
+function applyLang(){
+  document.documentElement.lang = lang;
+  document.querySelectorAll("[data-i18n]").forEach(el=>{
+    el.textContent = t(el.dataset.i18n);
+  });
+  dom.appTitle.textContent = t("appTitle");
+  const deckHidden = dom.deck.classList.contains("hidden");
+  dom.toggleDeck.textContent = deckHidden ? t("showControls") : t("hideControls");
+}
+
+/* ============ DOM cache (resolved once) ============ */
+const byId = id => document.getElementById(id);
+const dom = {
+  scoreA:byId("scoreA"), scoreB:byId("scoreB"),
+  foulA:byId("foulA"),   foulB:byId("foulB"),
+  period:byId("period"), tempo:byId("tempo"),
+  labelTeamA:byId("labelTeamA"), labelTeamB:byId("labelTeamB"),
+  ctrlNameA:byId("ctrlNameA"),   ctrlNameB:byId("ctrlNameB"),
+  inputA:byId("inputA"), inputB:byId("inputB"),
+  appTitle:byId("appTitle"),
+  deck:byId("deck"), toggleDeck:byId("btnToggleDeck"),
+  leaderBody:byId("leaderBody"), emptyMsg:byId("emptyMsg"),
+  overlay:byId("overlay"),
+  confirmOverlay:byId("confirmOverlay"), confirmText:byId("confirmText"),
+  durationButtons:document.querySelectorAll('[data-act="duration"]')
+};
+
+/* ============ Audio (Web Audio API, no external files) ============ */
+const audio = (()=>{
+  let ctx = null;
+
+  // Browsers require a user gesture before audio plays; the first click unlocks it.
+  function unlock(){
+    if(!ctx){
+      const Ctor = window.AudioContext || window.webkitAudioContext;
+      if(Ctor) ctx = new Ctor();
+    }
+    if(ctx && ctx.state === "suspended") ctx.resume();
+  }
+
+  // One envelope helper for both steady tones and frequency sweeps.
+  function tone({freq, freqEnd=null, dur, type="sine", vol=0.25, delay=0}){
+    if(!ctx) return;
+    const start = ctx.currentTime + delay;
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    const isSweep = freqEnd !== null;
+
+    osc.type = type;
+    osc.frequency.setValueAtTime(freq, start);
+    if(isSweep) osc.frequency.exponentialRampToValueAtTime(freqEnd, start + dur);
+
+    gain.gain.setValueAtTime(isSweep ? vol : 0, start);
+    if(!isSweep) gain.gain.linearRampToValueAtTime(vol, start + 0.01); // soft attack
+    gain.gain.exponentialRampToValueAtTime(0.0001, start + dur);
+
+    osc.connect(gain).connect(ctx.destination);
+    osc.start(start);
+    osc.stop(start + dur + 0.02);
+  }
+
+  const SOUNDS = {
+    goalA(){ tone({freq:440, freqEnd:1320, dur:0.5, type:"triangle", vol:0.3}); },        // rising chirp
+    goalB(){ tone({freq:660,  dur:0.12, type:"square", vol:0.28});
+             tone({freq:880,  dur:0.12, type:"square", vol:0.28, delay:0.13});
+             tone({freq:1100, dur:0.2,  type:"square", vol:0.28, delay:0.27}); },         // 3-step jingle
+    start(){ tone({freq:880, dur:0.4, type:"sine", vol:0.3}); },                           // single whistle
+    end(){   tone({freq:700, dur:0.25, type:"sawtooth", vol:0.3});
+             tone({freq:520, dur:0.6,  type:"sawtooth", vol:0.3, delay:0.27}); },          // double low horn
+    foul(){  tone({freq:300, dur:0.18, type:"square", vol:0.3});
+             tone({freq:300, dur:0.18, type:"square", vol:0.3, delay:0.22}); }             // harsh double buzz (same for both teams)
+  };
+
+  function play(name){ unlock(); const sound = SOUNDS[name]; if(sound) sound(); }
+  return { unlock, play };
+})();
+
+/* ============ State ============ */
+const state = {
+  scoreA:0, scoreB:0, foulA:0, foulB:0, period:1,
+  matchSeconds:DEFAULT_DURATION,   // configured match length
+  seconds:DEFAULT_DURATION,        // current countdown value
+  running:false, ticker:null,
+  nameA:DEFAULT_NAME_A, nameB:DEFAULT_NAME_B
+};
+
+const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
+
+/* ============ Render ============ */
+const pad2 = n => String(Math.max(0, n)).padStart(2, "0");
+function formatTime(totalSeconds){
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+  return pad2(minutes) + ":" + pad2(seconds);
+}
+function render(){
+  dom.scoreA.textContent = pad2(state.scoreA);
+  dom.scoreB.textContent = pad2(state.scoreB);
+  dom.foulA.textContent  = state.foulA;
+  dom.foulB.textContent  = state.foulB;
+  dom.period.textContent = state.period;
+  dom.tempo.textContent  = formatTime(state.seconds);
+  dom.labelTeamA.textContent = state.nameA;
+  dom.labelTeamB.textContent = state.nameB;
+  dom.ctrlNameA.textContent  = state.nameA;
+  dom.ctrlNameB.textContent  = state.nameB;
+  // Duration is configurable only while the clock is stopped.
+  dom.durationButtons.forEach(btn => { btn.disabled = state.running; });
+}
+
+/* ============ State mutators ============ */
+function adjustGoal(team, delta){
+  const key = "score" + team;
+  state[key] = Math.max(0, state[key] + delta);
+  if(delta > 0) audio.play("goal" + team);
+  render();
+}
+function adjustFoul(team, delta){
+  const key = "foul" + team;
+  state[key] = Math.max(0, state[key] + delta);
+  if(delta > 0) audio.play("foul");
+  render();
+}
+function adjustDuration(deltaMinutes){
+  if(state.running) return; // only adjustable while stopped
+  state.matchSeconds = clamp(state.matchSeconds + deltaMinutes * SECONDS_PER_MINUTE,
+                             MIN_DURATION, MAX_DURATION);
+  state.seconds = state.matchSeconds;
+  render();
+}
+function nextPeriod(){ state.period++; render(); }
+function setTeamName(team, rawValue){
+  const fallback = team === "A" ? DEFAULT_NAME_A : DEFAULT_NAME_B;
+  state["name" + team] = rawValue.toUpperCase() || fallback;
+  render();
+}
+
+/* ============ Timer ============ */
+function startTimer(){
+  if(state.running || state.seconds <= 0) return;
+  state.running = true;
+  audio.play("start");
+  render();
+  state.ticker = setInterval(()=>{
+    state.seconds--;
+    if(state.seconds <= 0){
+      state.seconds = 0;
+      pauseTimer();
+      render();
+      audio.play("end");
+      return;
+    }
+    render();
+  }, 1000);
+}
+function pauseTimer(){
+  state.running = false;
+  if(state.ticker){ clearInterval(state.ticker); state.ticker = null; }
+  render();
+}
+function resetMatch(){
+  pauseTimer();
+  state.scoreA = state.scoreB = state.foulA = state.foulB = 0;
+  state.period = 1;
+  state.seconds = state.matchSeconds;
+  render();
+}
+
+/* ============ Leaderboard ============ */
+// Persists to localStorage when available; falls back to in-memory for the session.
+const leaderboardStore = (()=>{
+  let memory = {};
+  let useStorage = true;
+  function load(){
+    if(useStorage){
+      try{ memory = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; }
+      catch(e){ useStorage = false; }
+    }
+    return memory;
+  }
+  function save(data){
+    memory = data;
+    if(!useStorage) return;
+    try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); }
+    catch(e){ useStorage = false; }
+  }
+  return { load, save, clear:()=>save({}) };
+})();
+
+function teamKey(name, fallback){
+  return (name || fallback).toUpperCase().trim() || fallback;
+}
+function recordMatch(){
+  const table = leaderboardStore.load();
+  const a = teamKey(state.nameA, DEFAULT_NAME_A);
+  const b = teamKey(state.nameB, DEFAULT_NAME_B);
+  table[a] = (table[a] || 0) + state.scoreA;
+  table[b] = (table[b] || 0) + state.scoreB;
+  leaderboardStore.save(table);
+}
+
+const MEDALS = ["🥇","🥈","🥉"];
+const rankLabel = index => MEDALS[index] || (index + 1);
+function cell(className, text){
+  const td = document.createElement("td");
+  td.className = className;
+  td.textContent = text;
+  return td;
+}
+function renderLeaderboard(){
+  const rows = Object.entries(leaderboardStore.load())
+                     .sort((a, b) => b[1] - a[1]); // most goals first
+  dom.leaderBody.innerHTML = "";
+  dom.emptyMsg.style.display = rows.length ? "none" : "block";
+  rows.forEach(([team, goals], index)=>{
+    const tr = document.createElement("tr");
+    tr.append(cell("rank", rankLabel(index)), cell("team", team), cell("goals", goals));
+    dom.leaderBody.appendChild(tr);
+  });
+}
+
+/* ============ Actions (dispatched from [data-act] buttons) ============ */
+const actions = {
+  goal:     btn => adjustGoal(btn.dataset.team, Number(btn.dataset.delta)),
+  foul:     btn => adjustFoul(btn.dataset.team, Number(btn.dataset.delta)),
+  duration: btn => adjustDuration(Number(btn.dataset.delta)),
+  start:    startTimer,
+  pause:    pauseTimer,
+  reset:    resetMatch,
+  periodPlus: nextPeriod,
+  end: async ()=>{
+    if(await askConfirm(t("confirmEnd"))){
+      pauseTimer();
+      audio.play("end");
+      recordMatch();
+      openLeaderboard();
+    }
+  }
+};
+
+/* ============ Custom confirm (native confirm() is blocked in many viewers) ============ */
+let pendingConfirm = null;
+function askConfirm(message){
+  return new Promise(resolve=>{
+    pendingConfirm = resolve;
+    dom.confirmText.textContent = message;
+    dom.confirmOverlay.classList.add("show");
+  });
+}
+function resolveConfirm(result){
+  dom.confirmOverlay.classList.remove("show");
+  const resolve = pendingConfirm; pendingConfirm = null;
+  if(resolve) resolve(result);
+}
+
+/* ============ Leaderboard modal ============ */
+function openLeaderboard(){ renderLeaderboard(); dom.overlay.classList.add("show"); }
+function closeLeaderboard(){ dom.overlay.classList.remove("show"); }
+
+/* ============ UI wiring ============ */
+document.querySelectorAll("[data-act]").forEach(btn=>{
+  btn.addEventListener("click", ()=>{
+    audio.unlock();
+    const handler = actions[btn.dataset.act];
+    if(handler) handler(btn);
+  });
+});
+
+dom.inputA.addEventListener("input", e => setTeamName("A", e.target.value));
+dom.inputB.addEventListener("input", e => setTeamName("B", e.target.value));
+
+byId("langSwitch").addEventListener("click", e=>{
+  const button = e.target.closest("button[data-lang]");
+  if(!button) return;
+  lang = button.dataset.lang;
+  document.querySelectorAll("#langSwitch button")
+          .forEach(b => b.classList.toggle("active", b === button));
+  applyLang();
+});
+
+dom.toggleDeck.addEventListener("click", ()=>{
+  dom.deck.classList.toggle("hidden"); // clean/presentation mode for TV
+  applyLang();                          // refresh the toggle label
+});
+
+byId("btnLeader").addEventListener("click", openLeaderboard);
+byId("closeModal").addEventListener("click", closeLeaderboard);
+byId("closeModal2").addEventListener("click", closeLeaderboard);
+dom.overlay.addEventListener("click", e => { if(e.target === dom.overlay) closeLeaderboard(); });
+byId("clearLeader").addEventListener("click", async ()=>{
+  if(await askConfirm(t("confirmClear"))){ leaderboardStore.clear(); renderLeaderboard(); }
+});
+
+byId("confirmYes").addEventListener("click", ()=>resolveConfirm(true));
+byId("confirmNo").addEventListener("click", ()=>resolveConfirm(false));
+dom.confirmOverlay.addEventListener("click", e=>{ if(e.target === dom.confirmOverlay) resolveConfirm(false); });
+
+/* ============ Init ============ */
+applyLang();
+render();
+</script>
+</body>
+</html>

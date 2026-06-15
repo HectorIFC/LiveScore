@@ -1,0 +1,15 @@
+version: 2
+
+updates:
+  # GitHub Actions dependencies (the only external deps in this repo — the app
+  # itself is a single dependency-free HTML file).
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    labels:
+      - dependencies
+      - github-actions
+    commit-message:
+      prefix: "build(deps)"
